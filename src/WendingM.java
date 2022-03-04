@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class WendingM {
@@ -5,9 +7,9 @@ public class WendingM {
     /**
      * Write a program to design Vending Machine using java with all possible tests
      * <p>
-     * Accepts coins of 1,5,10,25 Cents i.e. penny, nickel, dime, and quarter.
+     * Accepts coins of 1,5,10,25 Cents i.e. penny, nickel, dime, and quarter - Done.
      * <p>
-     * Allow user to select products Coke(25), Pepsi(35), Soda(45)
+     * Allow user to select products Coke(25), Pepsi(35), Soda(45) - Done
      * <p>
      * Allow user to take refund by cancelling the request.
      * <p>
@@ -22,16 +24,19 @@ public class WendingM {
     static String coke;
     static String pepsi;
     static String soda;
-    static int price;
+    static int price = cokePrice;
     static int totalIn;
-    static boolean myBreak = true;
+    static boolean myBreak;
+    static List<Integer> coins = new ArrayList<>();
+    static List<Integer> totalCollectionInTheMachine = new ArrayList<>();
 
     public static void main(String[] args) {
+        acceptableCoins();
         selectProductAndAssignPrice();
     }
 
     public static int selectProductAndAssignPrice() {
-        boolean myBreak = true;
+        myBreak = true;
 
         while (myBreak) {
             Scanner scanner = new Scanner(System.in);
@@ -56,13 +61,29 @@ public class WendingM {
         return price;
     }
 
-    public static void purchase(int coins) {
-
-        if (coins == 1 || coins == 5 || coins == 10 || coins == 25) {
-
+    public static int acceptableCoins() {
+        boolean myBreak = true;
+        while (myBreak) {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Please enter coins from 1, 5, 10 and 25 or 0 to stop  : ");
+            int coin = scanner.nextInt();
+            if (coin == 1 || coin == 5 || coin == 10 || coin == 25) {
+                coins.add(coin);
+            } else if (coin == 0) {
+                for(int a: coins)
+                    totalIn += a;
+                if(totalIn >=price) {
+                    System.out.println("The total amount collected is : " + totalIn + "p");
+                    System.out.println("Hurray! you have enough money, choose your drink now!");
+                } else {
+                    System.out.println("Insufficient funds, process has ended");
+                }
+                myBreak = false;
+            } else {
+                System.out.println("Invalid coin, please try again");
+            }
         }
-
-
+       return totalIn;
     }
 
     /**
