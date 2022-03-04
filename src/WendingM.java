@@ -13,7 +13,7 @@ public class WendingM {
      * <p>
      * Allow user to take refund by cancelling the request.
      * <p>
-     * Return selected product and remaining change if any.
+     * Return selected product and remaining change if any - Done.
      * <p>
      * Allow reset operation for vending machine supplier.
      */
@@ -29,39 +29,18 @@ public class WendingM {
     static boolean myBreak;
     static List<Integer> coins = new ArrayList<>();
     static List<Integer> totalCollectionInTheMachine = new ArrayList<>();
+    static int changeAmount;
+    static int refund;
+    static String refundConsent;
+    static String drinkSelection;
+    static int forceRefund;
 
     public static void main(String[] args) {
-        acceptableCoins();
-        selectProductAndAssignPrice();
+        userSelectsProductAndAssignsPrice();
+
     }
 
-    public static int selectProductAndAssignPrice() {
-        myBreak = true;
-
-        while (myBreak) {
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Please choose a drink from coke, pepsi or soda : ");
-            String selection = scanner.nextLine();
-            if (selection.equalsIgnoreCase("coke")) {
-                price = cokePrice;
-                System.out.println("The price of drink is : " + price + "p");
-                myBreak = false;
-            } else if (selection.equalsIgnoreCase("pepsi")) {
-                price = pepsiPrice;
-                System.out.println("The price of drink is : " + price + "p");
-                myBreak = false;
-            } else if (selection.equalsIgnoreCase("soda")) {
-                price = sodaPrice;
-                System.out.println("The price of drink is : " + price + "p");
-                myBreak = false;
-            } else {
-                System.out.println("Invalid selection, please try again");
-            }
-        }
-        return price;
-    }
-
-    public static int acceptableCoins() {
+    public static int userPutsAcceptableCoinsIn() {
         boolean myBreak = true;
         while (myBreak) {
             Scanner scanner = new Scanner(System.in);
@@ -70,47 +49,125 @@ public class WendingM {
             if (coin == 1 || coin == 5 || coin == 10 || coin == 25) {
                 coins.add(coin);
             } else if (coin == 0) {
-                for(int a: coins)
+                for (int a : coins)
                     totalIn += a;
-                if(totalIn >=price) {
+                if (totalIn >= price) {
                     System.out.println("The total amount collected is : " + totalIn + "p");
                     System.out.println("Hurray! you have enough money, choose your drink now!");
                 } else {
                     System.out.println("Insufficient funds, process has ended");
+                    myBreak = false;
                 }
                 myBreak = false;
             } else {
                 System.out.println("Invalid coin, please try again");
             }
         }
-       return totalIn;
+        return totalIn;
     }
 
-    /**
-     *  boolean myBreak = true;
-     *
-     *         while (myBreak) {
-     *             Scanner scanner = new Scanner(System.in);
-     *             System.out.println("Please choose a drink from coke, pepsi or soda : ");
-     *             String selection = scanner.nextLine();
-     *             if (selection.equalsIgnoreCase("coke")) {
-     *                 price = cokePrice;
-     *                 System.out.println("The price of drink is : " + price + "p");
-     *                 myBreak = false;
-     *             } else if (selection.equalsIgnoreCase("pepsi")) {
-     *                 price = pepsiPrice;
-     *                 System.out.println("The price of drink is : " + price + "p");
-     *                 myBreak = false;
-     *             } else if (selection.equalsIgnoreCase("soda")) {
-     *                 price = sodaPrice;
-     *                 System.out.println("The price of drink is : " + price + "p");
-     *                 myBreak = false;
-     *             } else {
-     *                 System.out.println("Invalid selection, please try again");
-     *             }
-     *         }
-     *         return price;
-     */
+    public static int userSelectsProductAndAssignsPrice() {
+        userPutsAcceptableCoinsIn();
+        if (totalIn >= 25) {
+            myBreak = true;
+            while (myBreak) {
+                Scanner scanner = new Scanner(System.in);
+                System.out.println("Please choose a drink from coke, pepsi or soda : ");
+                String selection = scanner.nextLine();
+                if (selection.equalsIgnoreCase("coke")) {
+                    price = cokePrice;
+                    if (totalIn < price) {
+                        forceRefund = totalIn;
+                        totalIn = 0;
+                        System.out.println("You have paid insufficient funds for this transaction");
+                        System.out.println("Your refund is :" + forceRefund + "p");
+                    } else {
+                        System.out.println("You will get a can of coke");
+                        drinkSelection = "coke";
+                        System.out.println("The price of drink is : " + price + "p");
+                        userCancelsTransactionAndGetsRefund();
+                    }
+                    myBreak = false;
+                } else if (selection.equalsIgnoreCase("pepsi")) {
+                    price = pepsiPrice;
+                    if (totalIn < price) {
+                        forceRefund = totalIn;
+                        totalIn = 0;
+                        System.out.println("You have paid insufficient funds for this transaction");
+                        System.out.println("Your refund is :" + forceRefund + "p");
+                    } else {
+                        System.out.println("You will get a can of pepsi");
+                        drinkSelection = "pepsi";
+                        System.out.println("The price of drink is : " + price + "p");
+                        userCancelsTransactionAndGetsRefund();
+                    }
+                        myBreak = false;
+                    } else if (selection.equalsIgnoreCase("soda")) {
+                        price = sodaPrice;
+                    if (totalIn < price) {
+                        forceRefund = totalIn;
+                        totalIn = 0;
+                        System.out.println("You have paid insufficient funds for this transaction");
+                        System.out.println("Your refund is :" + forceRefund + "p");
+                    } else {
+                        System.out.println("You will get a can of soda");
+                        drinkSelection = "soda";
+                        System.out.println("The price of drink is : " + price + "p");
+                        userCancelsTransactionAndGetsRefund();
+                    }
+                        myBreak = false;
+                    } else {
+                        System.out.println("Invalid selection, please try again");
+
+                    }
+                    //userCancelsTransactionAndGetsRefund();
+                }
+            }
+            return price;
+
+        }
+
+        public static int calculateAndPayBackChange () {
+
+            changeAmount = totalIn - price;
+            if (totalIn >= price) {
+                System.out.println("The change payable to the user is: " + changeAmount + "p");
+            } else {
+
+            }
+
+            return changeAmount;
+        }
+
+        public static int userCancelsTransactionAndGetsRefund () {
+            Scanner scanner = new Scanner(System.in);
+            System.out.println("Would you like a refund Yes/No");
+            refundConsent = scanner.nextLine();
+            if (refundConsent.equalsIgnoreCase("yes")) {
+                refund = totalIn;
+                System.out.println(refund + "p is being refunded due to cancelled transaction");
+            } else {
+                System.out.println("Transaction continued");
+                calculateAndPayBackChange();
+                System.out.println("You will get a can of " + drinkSelection);
+            }
+
+            return refund;
+
+        }
+
+//        public static int forceRefund () {
+//            if (totalIn < price) {
+//                forceRefund = totalIn;
+//                totalIn = 0;
+//                System.out.println("You have paid insufficient funds for this transaction");
+//                System.out.println("Your refund is :" + forceRefund() + "p");
+//            } else {
+//
+//                System.out.println("Transaction is being processed");
+//            }
+//            return forceRefund;
+//        }
 
 
-}
+    }
